@@ -1,0 +1,110 @@
+{
+	"name": "@acdh-oeaw/learn-react-next",
+	"license": "MIT",
+	"type": "module",
+	"engines": {
+		"node": "20.x",
+		"pnpm": "8.x"
+	},
+	"packageManager": "pnpm@8.15.4",
+	"scripts": {
+		"build": "next build",
+		"dev": "next dev",
+		"format:check": "prettier . \"!./content/**\" --cache --check --ignore-path ./.gitignore",
+		"format:fix": "pnpm run format:check --write",
+		"lint:check": "run-p --continue-on-error \"lint:*:check\"",
+		"lint:fix": "run-p --continue-on-error \"lint:*:fix\"",
+		"lint:code:check": "eslint . --cache --ignore-path ./.gitignore",
+		"lint:code:fix": "pnpm run lint:code:check --fix",
+		"lint:styles:check": "stylelint \"./**/*.css\" --cache --ignore-path ./.gitignore",
+		"lint:styles:fix": "pnpm run lint:styles:check --fix",
+		"preinstall": "npx only-allow pnpm",
+		"prepare": "run-s setup",
+		"setup": "is-ci || simple-git-hooks",
+		"start": "next start",
+		"types:check": "tsc --noEmit",
+		"validate": "run-p format:check lint:check types:check"
+	},
+	"dependencies": {
+		"next": "14.1.2",
+		"react": "^18",
+		"react-dom": "^18"
+	},
+	"devDependencies": {
+		"@acdh-oeaw/eslint-config": "^1.0.6",
+		"@acdh-oeaw/eslint-config-next": "^1.0.9",
+		"@acdh-oeaw/eslint-config-react": "^1.0.7",
+		"@acdh-oeaw/prettier-config": "^2.0.0",
+		"@acdh-oeaw/stylelint-config": "^2.0.1",
+		"@acdh-oeaw/tsconfig": "^1.0.2",
+		"@types/node": "^20",
+		"@types/react": "^18",
+		"@types/react-dom": "^18",
+		"autoprefixer": "^10.4.18",
+		"eslint": "^8.57.0",
+		"eslint-plugin-tailwindcss": "^3.14.3",
+		"is-ci": "^3.0.1",
+		"lint-staged": "^15.2.2",
+		"npm-run-all2": "^6.1.2",
+		"postcss": "^8",
+		"prettier": "^3.2.5",
+		"simple-git-hooks": "^2.10.0",
+		"stylelint": "^16.2.1",
+		"tailwindcss": "^3.4.1",
+		"typescript": "^5"
+	},
+	"eslintConfig": {
+		"extends": [
+			"@acdh-oeaw/eslint-config",
+			"@acdh-oeaw/eslint-config/strict",
+			"@acdh-oeaw/eslint-config-react",
+			"@acdh-oeaw/eslint-config-next",
+			"plugin:eslint-plugin-tailwindcss/recommended"
+		],
+		"rules": {
+			"arrow-body-style": [
+				"error",
+				"always"
+			],
+			"prefer-arrow-callback": [
+				"error",
+				{
+					"allowNamedFunctions": true
+				}
+			],
+			"react/jsx-boolean-value": [
+				"error",
+				"always"
+			],
+			"react/jsx-sort-props": [
+				"error",
+				{
+					"reservedFirst": true
+				}
+			]
+		}
+	},
+	"lint-staged": {
+		"*.@(js|ts|tsx)": [
+			"eslint --cache --fix",
+			"prettier --cache --write"
+		],
+		"*.@(css)": [
+			"stylelint --cache --fix",
+			"prettier --cache --write"
+		],
+		"*.!(css|js|ts|tsx)": "prettier --cache --ignore-unknown --write"
+	},
+	"postcss": {
+		"plugins": {
+			"tailwindcss": {}
+		}
+	},
+	"prettier": "@acdh-oeaw/prettier-config",
+	"simple-git-hooks": {
+		"pre-commit": "pnpm exec lint-staged"
+	},
+	"stylelint": {
+		"extends": "@acdh-oeaw/stylelint-config"
+	}
+}
