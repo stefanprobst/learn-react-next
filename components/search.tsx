@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, type ReactNode, useEffect, useState } from "react";
+import { type ChangeEvent, type FormEvent, type ReactNode, useEffect, useState } from "react";
 import { z } from "zod";
 
 const searchParamsSchema = z.object({
@@ -74,15 +74,32 @@ export function Search(props: SearchProps): ReactNode {
 		router.push("?" + String(newSearchParams));
 	}
 
+	const [searchTerm, setSearchTerm] = useState(filters.q);
+	const debouncedSearchTerm = useDebouncedValue(searchTerm);
+
+	function onChange(event: ChangeEvent<HTMLInputElement>) {
+		const searchTerm = event.currentTarget.value;
+		setSearchTerm(searchTerm);
+	}
+
+	useEffect(() => {
+		const searchParams = new URLSearchParams();
+		searchParams.append("q", debouncedSearchTerm);
+		router.push("?" + String(searchParams));
+	}, [router, debouncedSearchTerm]);
+
 	return (
 		<section>
 			<form onSubmit={onSubmit}>
+				<pre>{JSON.stringify(searchTerm)}</pre>
 				<label>
 					<div>Search term</div>
 					<input
+						autoComplete="off"
 						className="rounded-md border border-black px-3 py-1 shadow"
 						defaultValue={filters.q}
 						name="q"
+						onChange={onChange}
 					/>
 				</label>
 
@@ -104,4 +121,20 @@ export function Search(props: SearchProps): ReactNode {
 			</div>
 		</section>
 	);
+}
+
+function useDebouncedValue<T>(value: T, delay = 150): T {
+	const [debouncedValue, setDebouncedValue] = useState(value);
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			setDebouncedValue(value);
+		}, delay);
+
+		return () => {
+			clearTimeout(timeout);
+		};
+	}, [delay, value]);
+
+	return debouncedValue;
 }
